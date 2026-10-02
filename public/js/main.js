@@ -100,7 +100,7 @@ function renderGroups() {
   root.removeAttribute('aria-busy')
   const groups = visibleGroups()
   if (!groups.length) {
-    root.replaceChildren(h('p', { class: 'empty' }, '暂时还没有数据，请先到后台配置上游并同步。'))
+    root.replaceChildren(h('p', { class: 'empty' }, '暂时还没有数据，稍后再来看看。'))
     return
   }
   root.replaceChildren(...groups.map((g) => {

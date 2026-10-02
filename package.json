@@ -2,7 +2,7 @@
   "name": "pelican-mirror",
   "version": "0.1.0",
   "private": true,
-  "description": "Mirror and showcase for the sub2api pelican-showcase endpoint",
+  "description": "Showcase of model-drawn pelicans riding bicycles",
   "type": "module",
   "engines": {
     "node": ">=22.13.0"

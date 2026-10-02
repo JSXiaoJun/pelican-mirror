@@ -44,13 +44,13 @@
     <form id="settings-form">
       <section class="panel">
         <h2>上游设置</h2>
-        <p class="hint">你朋友的 sub2api 地址。数据接口固定为 /api/v1/pelican-showcase</p>
+        <p class="hint">数据来源站点的地址，只在服务器端使用，不会出现在展示页</p>
         <div class="fields">
-          <label class="f wide">站点地址<input class="input" name="baseUrl" placeholder="https://zl.yjapi.cc" inputmode="url"></label>
+          <label class="f wide">站点地址<input class="input" name="baseUrl" placeholder="https://example.com" inputmode="url"></label>
           <label class="f">时区<input class="input" name="timezone" placeholder="Asia/Shanghai"></label>
           <label class="f">同步间隔（分钟）<input class="input" type="number" min="1" max="1440" name="syncIntervalMin"></label>
-          <label class="f wide">预览图路径模板 <small>返回每张图 HTML/SVG/图片的接口，支持 {id} 和 {group_id}。在他页面上按 F12，选中卡片里的 iframe，把 src 复制过来，数字换成 {id}。留空则不抓预览图</small>
-            <input class="input" name="contentUrlTemplate" placeholder="/api/v1/pelican-showcase/items/{id}/html"></label>
+          <label class="f wide">预览图路径模板 <small>返回每张图 HTML/SVG/图片的接口，支持 {id} 和 {group_id}。在来源页面上按 F12，选中卡片里的 iframe，把 src 复制过来，数字换成 {id}。留空则不抓预览图</small>
+            <input class="input" name="contentUrlTemplate" placeholder="/api/.../items/{id}"></label>
           <label class="f wide">User-Agent <small>留空用程序默认值。只有用「从浏览器复制的令牌」时才需要填，而且必须和复制令牌的那个浏览器一致</small>
             <span style="display:flex;gap:8px"><input class="input" name="userAgent" spellcheck="false" autocomplete="off">
             <button class="btn" type="button" id="use-browser-ua" style="flex:none">填入当前浏览器</button></span></label>

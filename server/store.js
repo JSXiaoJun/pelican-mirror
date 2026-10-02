@@ -213,7 +213,7 @@ export function sanitizeSettings(patch = {}) {
       try {
         u = new URL(raw)
       } catch {
-        throw new Error('站点地址格式不对，例如 https://zl.yjapi.cc')
+        throw new Error('站点地址格式不对，例如 https://example.com')
       }
       if (!/^https?:$/.test(u.protocol)) throw new Error('站点地址必须以 http:// 或 https:// 开头')
     }
