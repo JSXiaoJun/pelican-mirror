@@ -1,0 +1,18 @@
+services:
+  app:
+    image: ${IMAGE:-ghcr.io/jsxiaojun/pelican-mirror:latest}
+    container_name: pelican-mirror
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Fixed inside the container; change HOST_PORT in .env to expose a different port
+      HOST: 0.0.0.0
+      PORT: 8787
+      DATA_DIR: /app/data
+    ports:
+      - "${HOST_PORT:-8787}:8787"
+    volumes:
+      - pelican-data:/app/data
+
+volumes:
+  pelican-data:

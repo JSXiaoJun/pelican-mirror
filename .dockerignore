@@ -1,0 +1,13 @@
+.git
+.github
+.claude
+node_modules
+data
+test
+.env
+.env.*
+*.log
+*.bat
+Dockerfile
+docker-compose.yml
+deploy

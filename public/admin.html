@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>后台管理 · 鹈鹕镜像</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/admin.css">
+  <script type="module" src="/js/admin.js"></script>
+</head>
+<body>
+  <section class="login panel" id="login" hidden>
+    <h2>后台登录</h2>
+    <p class="hint">密码是 .env 里的 ADMIN_PASSWORD；没设置的话看首次启动日志，或 data/.admin-password 文件</p>
+    <form id="login-form">
+      <label class="f">密码<input class="input" type="password" name="password" autocomplete="current-password" required></label>
+      <div class="actions"><button class="btn primary" type="submit">登录</button></div>
+    </form>
+  </section>
+
+  <div class="admin" id="app" hidden>
+    <div class="admin-top">
+      <h1>鹈鹕镜像 · 后台</h1>
+      <div class="actions" style="margin:0">
+        <a class="btn" href="/" target="_blank" rel="noopener">查看展示页</a>
+        <button class="btn" type="button" id="logout">退出登录</button>
+      </div>
+    </div>
+
+    <section class="panel">
+      <h2>运行状态</h2>
+      <p class="hint">按设定的间隔自动同步。令牌过期前会自动刷新；Refresh Token 失效时自动改用密码重新登录。</p>
+      <dl class="stats" id="stats"></dl>
+      <div class="actions">
+        <button class="btn primary" type="button" data-action="sync">立即同步</button>
+        <button class="btn" type="button" data-action="renew">测试登录 / 刷新令牌</button>
+        <button class="btn" type="button" data-action="retry">重试失败的预览</button>
+        <button class="btn" type="button" id="probe">自动查找预览接口</button>
+      </div>
+      <pre class="hint" id="probe-log" hidden style="white-space:pre-wrap;font:12px/1.6 var(--mono);background:#f7f6f1;padding:12px 14px;border-radius:10px;margin:14px 0 0"></pre>
+    </section>
+
+    <form id="settings-form">
+      <section class="panel">
+        <h2>上游设置</h2>
+        <p class="hint">你朋友的 sub2api 地址。数据接口固定为 /api/v1/pelican-showcase</p>
+        <div class="fields">
+          <label class="f wide">站点地址<input class="input" name="baseUrl" placeholder="https://zl.yjapi.cc" inputmode="url"></label>
+          <label class="f">时区<input class="input" name="timezone" placeholder="Asia/Shanghai"></label>
+          <label class="f">同步间隔（分钟）<input class="input" type="number" min="1" max="1440" name="syncIntervalMin"></label>
+          <label class="f wide">预览图路径模板 <small>返回每张图 HTML/SVG/图片的接口，支持 {id} 和 {group_id}。在他页面上按 F12，选中卡片里的 iframe，把 src 复制过来，数字换成 {id}。留空则不抓预览图</small>
+            <input class="input" name="contentUrlTemplate" placeholder="/api/v1/pelican-showcase/items/{id}/html"></label>
+          <label class="f wide">User-Agent <small>留空用程序默认值。只有用「从浏览器复制的令牌」时才需要填，而且必须和复制令牌的那个浏览器一致</small>
+            <span style="display:flex;gap:8px"><input class="input" name="userAgent" spellcheck="false" autocomplete="off">
+            <button class="btn" type="button" id="use-browser-ua" style="flex:none">填入当前浏览器</button></span></label>
+          <label class="f">本地保留天数 <small>0 = 永久保留，可以比上游保留得更久</small><input class="input" type="number" min="0" max="365" name="localRetentionDays"></label>
+          <label class="f">每组最多缓存条数<input class="input" type="number" min="1" max="5000" name="maxItemsPerGroup"></label>
+          <label class="f">前台每组显示条数<input class="input" type="number" min="1" max="500" name="displayLimit"></label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>上游账号</h2>
+        <p class="hint">账号密码和令牌二选一，都填最稳。留空的栏不会改动。内容加密保存，不会明文回显到页面。</p>
+        <div class="fields" id="cred-fields"></div>
+      </section>
+
+      <section class="panel">
+        <h2>展示页</h2>
+        <div class="fields">
+          <label class="f wide">标题<input class="input" name="siteTitle" maxlength="80"></label>
+          <label class="f wide">副标题<textarea class="input" name="siteSubtitle" maxlength="300" style="font-family:var(--sans);font-size:14px"></textarea></label>
+        </div>
+        <div class="actions"><button class="btn primary" type="submit">保存设置</button></div>
+      </section>
+    </form>
+
+    <section class="panel">
+      <h2>分组管理</h2>
+      <p class="hint">第一次同步后才会出现分组。显示名称留空就用上游原名；排序数字越小越靠前。</p>
+      <div id="groups-table"></div>
+      <div class="actions"><button class="btn primary" type="button" id="save-groups">保存分组</button></div>
+    </section>
+  </div>
+</body>
+</html>
