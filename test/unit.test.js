@@ -2,13 +2,26 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { totp } from '../server/totp.js'
 import { jwtExp, unwrapEnvelope, UpstreamError } from '../server/upstream.js'
-import { normalizeContent, looksLikeDrawing } from '../server/content.js'
+import { normalizeContent, looksLikeDrawing, thumbnailDoc } from '../server/content.js'
 import { parseTs, sanitizeSettings } from '../server/store.js'
 import { createCipher, createSessionSigner } from '../server/crypto.js'
 import { loadConfig } from '../server/config.js'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+
+test('thumbnailDoc strips scripts and SMIL animation and freezes CSS animation', () => {
+  const doc = thumbnailDoc(
+    '<!doctype html><html><head><style>.a{animation:spin 1s infinite}</style></head><body>' +
+    '<svg><circle r="5"><animate attributeName="r" values="1;5" dur="1s"/></circle>' +
+    '<g><animateTransform attributeName="transform" type="rotate"></animateTransform></g></svg>' +
+    '<script>requestAnimationFrame(function f(){requestAnimationFrame(f)})</script></body></html>'
+  )
+  assert.doesNotMatch(doc, /<script|<animate/i)
+  assert.match(doc, /<circle r="5"><\/circle>/)
+  assert.match(doc, /animation-play-state:paused!important[^<]*<\/style><\/head>/)
+  assert.match(thumbnailDoc('<svg></svg>'), /^<style>.*<\/style><svg><\/svg>$/)
+})
 
 test('admin password is generated once, persisted, and overridable by env', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cfg-'))

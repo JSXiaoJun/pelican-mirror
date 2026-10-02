@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { createSessionSigner, safeEqual } from './crypto.js'
 import { HttpError, sendJson, readJsonBody, parseCookies, clientIp, isHttps, serveStatic } from './http.js'
 import { PREVIEW_CANDIDATES } from './upstream.js'
+import { thumbnailDoc } from './content.js'
 
 const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../public')
 const COOKIE = 'pm_admin'
@@ -20,6 +21,10 @@ const CONTENT_HEADERS = {
   'Content-Security-Policy': "sandbox allow-scripts; default-src 'none'; img-src data: blob: https:; style-src 'unsafe-inline' https:; font-src data: https:; script-src 'unsafe-inline' https:; media-src data: blob: https:",
   'Cache-Control': 'public, max-age=86400',
   'X-Content-Type-Options': 'nosniff'
+}
+const THUMB_HEADERS = {
+  ...CONTENT_HEADERS,
+  'Content-Security-Policy': "sandbox; default-src 'none'; img-src data: blob: https:; style-src 'unsafe-inline' https:; font-src data: https:"
 }
 
 export function buildShowcase(store) {
@@ -207,11 +212,13 @@ export function createApp({ config, store, upstream, syncer }) {
     if (p === '/api/showcase' && req.method === 'GET') {
       return sendJson(res, 200, buildShowcase(store), { 'Cache-Control': 'public, max-age=30' })
     }
-    const m = p.match(/^\/api\/items\/(\d+)\/content$/)
+    const m = p.match(/^\/api\/items\/(\d+)\/(content|thumb)$/)
     if (m && req.method === 'GET') {
-      const html = store.getItemContent(m[1])
-      if (!html) throw new HttpError(404, '暂无预览')
-      res.writeHead(200, { ...CONTENT_HEADERS, 'Content-Length': Buffer.byteLength(html) })
+      const raw = store.getItemContent(m[1])
+      if (!raw) throw new HttpError(404, '暂无预览')
+      const isThumb = m[2] === 'thumb'
+      const html = isThumb ? thumbnailDoc(raw) : raw
+      res.writeHead(200, { ...(isThumb ? THUMB_HEADERS : CONTENT_HEADERS), 'Content-Length': Buffer.byteLength(html) })
       return res.end(html)
     }
     if (p.startsWith('/api/admin/')) return handleAdmin(req, res, p)

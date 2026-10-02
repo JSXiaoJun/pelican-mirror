@@ -134,6 +134,12 @@ test('password login -> sync -> showcase with renamed group', async () => {
   assert.equal(content.status, 200)
   assert.match(content.headers.get('content-security-policy'), /sandbox allow-scripts/)
   assert.match(await content.text(), /<svg id="p196">/)
+
+  const thumb = await fetch(`${base}/api/items/196/thumb`)
+  assert.equal(thumb.status, 200)
+  assert.match(thumb.headers.get('content-security-policy'), /^sandbox;/)
+  assert.doesNotMatch(thumb.headers.get('content-security-policy'), /script-src/)
+  assert.match(await thumb.text(), /animation-play-state:paused[\s\S]*<svg id="p196">/)
 })
 
 test('expired access token is refreshed via rotated refresh token', async () => {

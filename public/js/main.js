@@ -66,7 +66,7 @@ function sparkline(group) {
 function card(group, item, isLatest) {
   const thumb = h('div', {
     class: 'thumb',
-    'data-src': item.hasContent ? `/api/items/${item.id}/content` : null,
+    'data-src': item.hasContent ? `/api/items/${item.id}/thumb` : null,
     'data-title': `${item.model} 预览`
   })
   if (!item.hasContent) thumb.append(h('div', { class: 'ph' }, h('b', {}, platformMark(group.platform)), '暂无预览'))

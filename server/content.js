@@ -96,6 +96,22 @@ function imageDoc(src) {
   return wrapDoc(`<img src="${safe}" alt="">`, 'img{max-width:100%;max-height:100vh;object-fit:contain}')
 }
 
+// Static variant for grid thumbnails: dozens of animated pages repainting every frame freeze the showcase.
+// A paused animation with a large negative delay is drawn once, past its end: fade-ins with `forwards` show their
+// final state instead of keyframe 0 (often opacity:0), and looping ones freeze at some mid-pose.
+const FREEZE_STYLE =
+  '<style>*,*::before,*::after{animation-delay:-60s!important;animation-play-state:paused!important;transition:none!important}</style>'
+const SMIL_SELF_CLOSING_RE = /<(?:animate|animateTransform|animateMotion|set)\b[^>]*\/>/gi
+const SMIL_PAIRED_RE = /<(animate|animateTransform|animateMotion|set)\b[^>]*>[\s\S]*?<\/\1\s*>/gi
+
+export function thumbnailDoc(html) {
+  const s = html
+    .replace(/<script\b[\s\S]*?<\/script\s*>/gi, '')
+    .replace(SMIL_SELF_CLOSING_RE, '')
+    .replace(SMIL_PAIRED_RE, '')
+  return /<\/head\s*>/i.test(s) ? s.replace(/<\/head\s*>/i, `${FREEZE_STYLE}</head>`) : FREEZE_STYLE + s
+}
+
 // center=true is only for single images/SVGs; HTML fragments keep their own layout
 function wrapDoc(body, css = '', center = true) {
   const base = center
