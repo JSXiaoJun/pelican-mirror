@@ -7,10 +7,10 @@ services:
     environment:
       # Fixed inside the container; change HOST_PORT in .env to expose a different port
       HOST: 0.0.0.0
-      PORT: 8787
+      PORT: 28787
       DATA_DIR: /app/data
     ports:
-      - "${HOST_PORT:-8787}:8787"
+      - "${HOST_PORT:-28787}:28787"
     volumes:
       - pelican-data:/app/data
 

@@ -10,7 +10,7 @@ export function loadConfig(env = process.env) {
 
   return {
     host: env.HOST || '0.0.0.0',
-    port: Number(env.PORT) || 8787,
+    port: Number(env.PORT) || 28787,
     dataDir,
     dbPath: path.join(dataDir, 'mirror.db'),
     trustProxy: env.TRUST_PROXY === '1' || env.TRUST_PROXY === 'true',
